@@ -1,6 +1,6 @@
 {
-  "name": "@web/dev-server-core",
-  "version": "0.7.3",
+  "name": "@openpgp/wtr-dev-server-core",
+  "version": "0.7.3-patch.0",
   "publishConfig": {
     "access": "public"
   },
@@ -8,11 +8,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/modernweb-dev/web.git",
+    "url": "https://github.com/openpgpjs/web-test-runner.git",
     "directory": "packages/dev-server-core"
   },
   "author": "modern-web",
-  "homepage": "https://github.com/modernweb-dev/web/tree/master/packages/dev-server-core",
+  "homepage": "https://github.com/openpgpjs/web-test-runner/tree/master/packages/dev-server-core",
   "main": "dist/index.js",
   "exports": {
     ".": {
