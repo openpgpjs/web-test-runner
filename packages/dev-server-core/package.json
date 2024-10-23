@@ -1,6 +1,6 @@
 {
   "name": "@openpgp/wtr-dev-server-core",
-  "version": "0.7.3-patch.0",
+  "version": "0.7.3-patch.1",
   "publishConfig": {
     "access": "public"
   },
