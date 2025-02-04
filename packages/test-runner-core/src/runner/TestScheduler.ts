@@ -7,6 +7,8 @@ import { withTimeout } from '../utils/async.js';
 import { TestSessionTimeoutHandler } from './TestSessionTimeoutHandler.js';
 import { BrowserLauncher } from '../browser-launcher/BrowserLauncher.js';
 
+const TESTS_START_TIMEOUT_MAX_RETRIES = 2;
+
 export class TestScheduler {
   private config: TestRunnerCoreConfig;
   private sessions: TestSessionManager;
@@ -15,6 +17,7 @@ export class TestScheduler {
   private finishedBrowsers = new Set<BrowserLauncher>();
   private stopPromises = new Set<Promise<unknown>>();
   private browserStartTimeoutMsg: string;
+  private testsStartTimeoutRetriesPerSession: { [sessionID: string]: number };
 
   constructor(
     config: TestRunnerCoreConfig,
@@ -23,6 +26,7 @@ export class TestScheduler {
   ) {
     this.config = config;
     this.sessions = sessions;
+    this.testsStartTimeoutRetriesPerSession = {};
     this.browsers = [...browsers].sort(
       (a, b) => (a.__experimentalWindowFocus__ ? 1 : 0) - (b.__experimentalWindowFocus__ ? 1 : 0),
     );
@@ -158,11 +162,30 @@ export class TestScheduler {
     }
   }
 
-  private setSessionFailed(session: TestSession, ...errors: TestResultError[]) {
+  setSessionFailed(session: TestSession, ...errors: TestResultError[]) {
+    // retry mechanism for browserstack failing to start tests due to server disconnect, for unclear reasons.
+    // this is applied as long as the user has included 'browserstack' in the `config.browserName`.
+    if (session.browser.name.toLowerCase().includes('browserstack') &&
+        errors.some(error => error.message.includes('testsStartTimeout'))) {
+      if (this.testsStartTimeoutRetriesPerSession[session.id] === undefined) {
+        this.testsStartTimeoutRetriesPerSession[session.id] = 0;
+      }
+      if (this.testsStartTimeoutRetriesPerSession[session.id]++ < TESTS_START_TIMEOUT_MAX_RETRIES) {
+          console.log(`restarting browserstack session after testsStartTimeout (retry #${this.testsStartTimeoutRetriesPerSession[session.id]})`);
+          return session.browser.stop!()
+            .then(async () => {
+              await session.browser.initialize!(this.config, /* unused arg, needed for TS */[])
+              await this.startSession(session);
+            }).catch(error => {
+              console.error('error restarting browserstack session', error);
+            });
+      }
+    }
+
     this.stopSession(session, errors);
   }
 
-  async stopSession(session: TestSession, errors: TestResultError[] = []) {
+  private async stopSession(session: TestSession, errors: TestResultError[] = []) {
     if (this.timeoutHandler.isStale(session)) {
       return;
     }

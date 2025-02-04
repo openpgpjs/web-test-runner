@@ -87,7 +87,7 @@ export class TestSessionTimeoutHandler {
   }
 
   private setSessionFailed(session: TestSession, ...errors: TestResultError[]) {
-    this.scheduler.stopSession(session, errors);
+    this.scheduler.setSessionFailed(session, ...errors);
   }
 
   clearTimeoutsForSession(session: TestSession) {
