@@ -1,6 +1,6 @@
 {
   "name": "@openpgp/wtr-test-runner-core",
-  "version": "0.13.4-patch.1",
+  "version": "0.13.4-patch.2",
   "publishConfig": {
     "access": "public"
   },
@@ -32,7 +32,7 @@
     "node": ">=18.0.0"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "rm ./tsconfig.tsbuildinfo && rm -rf dist && tsc",
     "test:node": "mocha test/**/*.test.ts --require ts-node/register --reporter dot",
     "test:watch": "mocha test/**/*.test.ts --require ts-node/register --watch --watch-files src,test"
   },
