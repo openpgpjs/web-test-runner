@@ -58,6 +58,7 @@ export interface TestRunnerCoreConfig {
   testsStartTimeout: number;
   testsFinishTimeout: number;
   staticLogging?: boolean;
+  testsStartTimeoutMaxRetries?: number;
 
   /** Ignores browsers option and prints manual testing URL. */
   manual?: boolean;
