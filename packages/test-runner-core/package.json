@@ -1,6 +1,6 @@
 {
   "name": "@openpgp/wtr-test-runner-core",
-  "version": "0.13.4-patch.0",
+  "version": "0.13.4-patch.1",
   "publishConfig": {
     "access": "public"
   },
